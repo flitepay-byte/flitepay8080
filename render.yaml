@@ -1,0 +1,213 @@
+# =============================================================================
+# OTDMS on Render — three services from one repository
+# =============================================================================
+#
+# Blueprint for the whole deployment. Render reads this from the repository root
+# and creates every service in it; each one has its own `rootDir`, so the three
+# folders stay exactly where they are and nothing needs splitting out.
+#
+# The repository root is this folder, so the service directories are `server`,
+# `client` and `demo-party` directly beneath it.
+#
+# -----------------------------------------------------------------------------
+# THE ONE THING THAT DECIDES THIS WHOLE FILE
+# -----------------------------------------------------------------------------
+# The authentication cookies are `SameSite=Lax` (services/token.service.ts), and
+# the socket handshake reads the same cookie (sockets/index.ts). A browser does
+# not send a Lax cookie on a cross-site request — so if the front end called the
+# API on its own hostname, sign-in would appear to succeed and then every request
+# after it would come back 401, with nothing in the logs to say why.
+#
+# So the front end never calls the API's hostname. It asks its own origin, and
+# the two rewrites below forward `/api/*` and `/socket.io/*` to the API service.
+# The browser sees one origin, the cookie stays first-party, and CORS never comes
+# into it. This is exactly what the nginx container already does in the Docker
+# setup — the same arrangement, expressed in Render's terms.
+#
+# The alternative is `SameSite=None` cookies, which would work and would also
+# widen the CSRF surface for no gain here. This way needs no code change at all.
+#
+# -----------------------------------------------------------------------------
+# BEFORE YOU APPLY THIS
+# -----------------------------------------------------------------------------
+# The rewrite destinations below assume the API service ends up at
+# `https://otdms-api.onrender.com`. Render appends a suffix if that name is
+# already taken, so check the API's real URL after the first deploy and correct
+# the two `destination:` lines if it differs. Everything else is name-agnostic.
+#
+# Anything marked `sync: false` is a secret: Render will ask for it in the
+# dashboard and will not keep it in this file or in git.
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # 1. BACKEND / API
+  # ===========================================================================
+  - type: web
+    name: otdms-api
+    runtime: node
+    rootDir: server
+    plan: free
+    # `--include=dev` is not optional here, and the reason is worth stating.
+    #
+    # Render sets NODE_ENV=production, and a plain `npm ci` under that omits
+    # devDependencies — which is where the TypeScript compiler and its type
+    # packages live. The build then either cannot find `tsc` at all or resolves
+    # some other one, and fails on options this project's pinned version accepts
+    # perfectly well. Installing dev dependencies for the build is what makes the
+    # compiler that runs on Render the same compiler that runs locally.
+    #
+    # They are build-time only: `npm start` runs the emitted JavaScript in dist/
+    # and needs none of them.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    # Render restarts the service if this stops answering 200.
+    healthCheckPath: /api/v1/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT is injected by Render and read by src/config/env.ts. Do not set it.
+      - key: API_PREFIX
+        value: /api/v1
+
+      # --- data stores -------------------------------------------------------
+      # MongoDB Atlas. Use the connection string from Atlas → Connect → Drivers,
+      # and allow this service's outbound IPs under Atlas → Network Access.
+      - key: MONGO_URI
+        sync: false
+      # Upstash. The `rediss://` form — TLS is not optional there.
+      - key: REDIS_URL
+        sync: false
+
+      # --- who may call from a browser ---------------------------------------
+      # Only the front end. The demo shop is not listed and does not need to be:
+      # it calls server-to-server with a signature, never from a browser, so no
+      # Origin header is ever involved.
+      - key: CLIENT_ORIGIN
+        sync: false # https://otdms-web.onrender.com
+
+      # --- secrets -----------------------------------------------------------
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      # Party API secrets are encrypted with this. Changing it later makes every
+      # existing key unreadable, so set it once and keep it.
+      - key: API_SECRET_ENCRYPTION_KEY
+        generateValue: true
+
+      # --- cookies -----------------------------------------------------------
+      - key: COOKIE_SECURE
+        value: "true"
+      # Left as `localhost`, which is the value that makes token.service.ts set
+      # no Domain attribute at all — a host-only cookie, which is what the
+      # same-origin arrangement above wants.
+      - key: COOKIE_DOMAIN
+        value: localhost
+
+      # --- email, for the OTP every sign-in needs ----------------------------
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      # Deliberately absent. Setting it makes every code the same fixed value and
+      # sends no email at all — useful locally, never here.
+
+      # --- file storage ------------------------------------------------------
+      # Not optional on Render. The disk is ephemeral, so a proof written to it
+      # is gone at the next deploy; Cloudinary is what makes uploads survive.
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: otdms/proofs
+
+      # --- first administrator ----------------------------------------------
+      - key: SEED_DEFAULT_PASSWORD
+        sync: false
+
+      # --- demonstration ----------------------------------------------------
+      # Lets the customer-payment stand-in answer in production, so a pay-in can
+      # be completed without a real UPI rail. Turn it off for anything that is
+      # not a demonstration.
+      - key: ALLOW_PAYMENT_SIMULATION
+        value: "true"
+
+      - key: LOG_LEVEL
+        value: info
+
+  # ===========================================================================
+  # 2. FRONTEND
+  # ===========================================================================
+  - type: web
+    name: otdms-web
+    runtime: static
+    rootDir: client
+    # Same reason as the API: vite and the TypeScript compiler are dev
+    # dependencies, and a static-site build that cannot reach them produces
+    # nothing to publish.
+    buildCommand: npm ci --include=dev && npm run build
+    staticPublishPath: dist
+
+    envVars:
+      # Relative, so the browser asks this origin and the rewrites below carry it
+      # across. lib/api.ts already defaults to exactly this.
+      - key: VITE_API_URL
+        value: /api/v1
+      # Empty on purpose: the socket client then connects to its own origin, and
+      # the handshake carries the first-party cookie it needs.
+      - key: VITE_SOCKET_URL
+        value: ""
+
+    # Order matters. The catch-all at the end is what makes client-side routing
+    # work, and it would swallow the two API rules if it came first.
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://otdms-api.onrender.com/api/*
+      - type: rewrite
+        source: /socket.io/*
+        destination: https://otdms-api.onrender.com/socket.io/*
+      # Single-page app: a deep link like /admin/review-queue is not a file.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # ===========================================================================
+  # 3. PARTY DEMO WEBSITE
+  # ===========================================================================
+  # A pretend merchant. Not part of OTDMS: it stands in for a customer's own
+  # site, integrating over HTTP with nothing shared but an API key.
+  - type: web
+    name: otdms-shop
+    runtime: node
+    rootDir: demo-party
+    plan: free
+    # No dependencies and no build step — plain Node, on purpose, so a party's
+    # developer can read the one file and see what to send.
+    buildCommand: ""
+    startCommand: node server.js
+
+    envVars:
+      # Where callbacks come back to. Correct this if Render gives the service a
+      # different hostname.
+      - key: SELF_URL
+        sync: false # https://otdms-shop.onrender.com
+      - key: SHOP_NAME
+        value: Chai & Co
+      # No credentials here, deliberately. They are pasted into /integration
+      # while the demo is running, which is both the safer arrangement and the
+      # thing being demonstrated: an administrator issues a key and a party
+      # connects with it, without anybody editing a file.

@@ -1,0 +1,42 @@
+# Demo overlay for a client review over a Cloudflare tunnel.
+#
+# Layered on top of docker-compose.yml, so the real deployment config is not
+# touched:
+#   docker compose -f docker-compose.yml -f docker-compose.demo.yml up -d --build
+#
+# It changes four things, and each one is a blocker without it:
+#
+#   1. MongoDB moves to host port 27018. The developer machine already runs a
+#      MongoDB on 27017, and two of them cannot bind the same port. Inside the
+#      compose network nothing changes — the API still reaches it on 27017 —
+#      so this only affects seeding from the host.
+#
+#   2. NODE_ENV becomes development, which is what makes OTP_STATIC_CODE work
+#      at all: the login code is gated on `!isProd`. Without it the reviewer
+#      reaches the OTP screen and can never get a code, because no SMTP is
+#      configured. Set SMTP_* instead and drop this if you would rather show
+#      the real email flow.
+#
+#   3. Cookies are marked Secure, because the tunnel serves HTTPS.
+#
+#   4. CLIENT_ORIGIN follows PUBLIC_URL. Socket.IO checks the handshake Origin
+#      against it, so a tunnel URL that is not listed here connects over REST
+#      and then silently fails to receive any live update.
+services:
+  mongodb:
+    # !override, not a plain list: Compose *merges* port lists, so without it
+    # the container would try to bind 27017 as well and collide with the
+    # MongoDB already running on this machine.
+    ports: !override
+      - "27018:27017"
+
+  api:
+    environment:
+      # Development only so the fixed login code below is honoured; see (2).
+      NODE_ENV: development
+      # Every account signs in with this code. No email is sent at all.
+      OTP_STATIC_CODE: ${DEMO_OTP:-123456}
+      # The tunnel is HTTPS, so the session cookie should say so.
+      COOKIE_SECURE: "true"
+      # Must be the public tunnel URL, or live updates never arrive; see (4).
+      CLIENT_ORIGIN: ${PUBLIC_URL:-http://localhost:5173}

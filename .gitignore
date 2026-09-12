@@ -1,0 +1,43 @@
+
+# Local secrets for docker compose interpolation.
+.env
+
+# =============================================================================
+# Repository-wide additions
+# =============================================================================
+# The server directory has its own .gitignore; these cover the repository root
+# and the two folders that had none — the client and the demo shop — so that a
+# plain `git add .` cannot pick up a credential or a build artefact.
+
+# --- secrets, at every depth --------------------------------------------------
+# These files hold live Atlas, Upstash, SMTP and Cloudinary credentials.
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# --- dependencies and build output --------------------------------------------
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# --- local uploads -------------------------------------------------------------
+# Proofs written to disk when Cloudinary is not configured. They are somebody's
+# payment evidence and belong nowhere near a repository.
+uploads/
+**/uploads/
+!**/uploads/.gitkeep
+
+# --- logs and editor/OS noise ---------------------------------------------------
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

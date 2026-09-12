@@ -1,0 +1,801 @@
+{
+  "findings": [],
+  "scenarios": [
+    {
+      "area": "Accounting",
+      "name": "every party balance reconstructs from its own history",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no party holds a negative balance",
+      "passed": true,
+      "detail": "0 parties negative"
+    },
+    {
+      "area": "Accounting",
+      "name": "no captain holds a negative balance or lock",
+      "passed": true,
+      "detail": "0 captains negative"
+    },
+    {
+      "area": "Accounting",
+      "name": "locked collateral equals the value of tasks in hand",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "commission is credited exactly once per completed task",
+      "passed": true,
+      "detail": "0 duplicated, 0 missing"
+    },
+    {
+      "area": "Accounting",
+      "name": "no commission exists for a task that is not complete",
+      "passed": true,
+      "detail": "0 orphaned"
+    },
+    {
+      "area": "Accounting",
+      "name": "captain balance equals reimbursements plus commission minus settled withdrawals",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "withdrawal portions sum to the parent request",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no allocation is consumed beyond what it holds",
+      "passed": true,
+      "detail": "0 over-consumed"
+    },
+    {
+      "area": "Accounting",
+      "name": "no payment reference is claimed on two different tasks",
+      "passed": true,
+      "detail": "0 reused"
+    },
+    {
+      "area": "Accounting",
+      "name": "platform commission equals what completed tasks earned minus settled withdrawals",
+      "passed": true,
+      "detail": "expected 18,918.44 DMC, actual 18,918.44 DMC"
+    },
+    {
+      "area": "Accounting",
+      "name": "platform wallet is never negative",
+      "passed": true,
+      "detail": "18,918.44 DMC"
+    },
+    {
+      "area": "Accounting",
+      "name": "no admin allocation exists for a task that is not complete",
+      "passed": true,
+      "detail": "0 such allocations"
+    },
+    {
+      "area": "Accounting",
+      "name": "3 cancelled tasks exist to check refunds against",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no fractional paise anywhere in task amounts",
+      "passed": true,
+      "detail": "0 fractional"
+    },
+    {
+      "area": "State machine",
+      "name": "every recorded transition is permitted by the table",
+      "passed": true
+    },
+    {
+      "area": "History/Audit",
+      "name": "the last history entry matches the current status",
+      "passed": true,
+      "detail": "0 mismatched, e.g. "
+    },
+    {
+      "area": "History/Audit",
+      "name": "every history event names the role that caused it",
+      "passed": true,
+      "detail": "0 tasks have an event with no actorRole"
+    },
+    {
+      "area": "History/Audit",
+      "name": "history timestamps never go backwards",
+      "passed": true,
+      "detail": "0 out of order"
+    },
+    {
+      "area": "History/Audit",
+      "name": "19 reassigned tasks exist",
+      "passed": true
+    },
+    {
+      "area": "History/Audit",
+      "name": "every claim event names the captain who made it",
+      "passed": true,
+      "detail": "0 with an unstamped claim"
+    },
+    {
+      "area": "State machine",
+      "name": "the current captain is never also listed as a previous one",
+      "passed": true,
+      "detail": "0 overlapping"
+    },
+    {
+      "area": "State machine",
+      "name": "a finished task carries no pending deadlines",
+      "passed": true,
+      "detail": "0 terminal tasks still hold a deadline"
+    },
+    {
+      "area": "State machine",
+      "name": "an unclaimed task has no captain attached",
+      "passed": true,
+      "detail": "0 ghosts"
+    },
+    {
+      "area": "State machine",
+      "name": "no task has two live proofs",
+      "passed": true,
+      "detail": "0 tasks with multiple"
+    },
+    {
+      "area": "Search",
+      "name": "a captain searching another captain's exact task code finds nothing",
+      "passed": true,
+      "detail": "0 hits"
+    },
+    {
+      "area": "Search",
+      "name": "captain search never covers the party tracking reference",
+      "passed": true
+    },
+    {
+      "area": "Search",
+      "name": "regex-like and oversized search input is matched literally",
+      "passed": true,
+      "detail": "0 terms matched everything"
+    },
+    {
+      "area": "Search",
+      "name": "a counterparty search matching nobody resolves to an empty set",
+      "passed": true
+    },
+    {
+      "area": "Search",
+      "name": "a blank counterparty search does not filter at all",
+      "passed": true
+    },
+    {
+      "area": "State machine",
+      "name": "task codes are unique",
+      "passed": true,
+      "detail": "0 duplicated"
+    },
+    {
+      "area": "State machine",
+      "name": "every task belongs to an existing party",
+      "passed": true,
+      "detail": "0 orphans"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "all five accounts complete the two-step OTP sign-in",
+      "passed": true
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "each session carries the role it signed in as",
+      "passed": true,
+      "detail": "ADMIN/PARTY/CAPTAIN"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin task detail names both the party and the captain",
+      "passed": true,
+      "detail": "status 200"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "the second party can read its own task list",
+      "passed": true,
+      "detail": "status 200"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain task detail leaks no party identity or tracking reference",
+      "passed": true
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "the code shown to a captain does not name the party",
+      "passed": true,
+      "detail": "shown \"JOB-YQ2A2QS5\" for a task owned by PARTY-003"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain cannot open another captain's task by id",
+      "passed": true,
+      "detail": "status 404"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party cannot open another party's task by id",
+      "passed": true,
+      "detail": "status 404"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party task list names no captain",
+      "passed": true
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin route is closed to other roles: /admin/tasks",
+      "passed": true,
+      "detail": "party 403, captain 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin route is closed to other roles: /admin/parties",
+      "passed": true,
+      "detail": "party 403, captain 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin route is closed to other roles: /admin/captains",
+      "passed": true,
+      "detail": "party 403, captain 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin route is closed to other roles: /admin/wallet",
+      "passed": true,
+      "detail": "party 403, captain 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin route is closed to other roles: /admin/dmc-topups",
+      "passed": true,
+      "detail": "party 403, captain 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain route is closed to a party: /captain/tasks",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain route is closed to a party: /captain/queue",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain route is closed to a party: /captain/wallet",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party route is closed to a captain: /party/tasks",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party route is closed to a captain: /party/wallet",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party route is closed to a captain: /party/withdrawal-portions",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party cannot pay another party's withdrawal portion",
+      "passed": true,
+      "detail": "status 409"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "captain cannot confirm another captain's withdrawal portion",
+      "passed": true,
+      "detail": "status 404"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "party top-up list contains only that party's own requests",
+      "passed": true
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "released captain sees nothing of the captain who replaced them",
+      "passed": true
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "a captain cannot start a task held by another captain",
+      "passed": true,
+      "detail": "status 403"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "admin routes reject an unauthenticated caller",
+      "passed": true,
+      "detail": "status 401"
+    },
+    {
+      "area": "Privacy/AuthZ",
+      "name": "a forged session cookie is rejected",
+      "passed": true,
+      "detail": "status 401"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — zero",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — negative",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — exactly the minimum",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — one below the minimum",
+      "passed": true,
+      "detail": "HTTP 422"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — exactly the maximum",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — one above the maximum",
+      "passed": true,
+      "detail": "HTTP 422"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — absurdly large",
+      "passed": true,
+      "detail": "HTTP 422"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — fractional paise",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — a numeric string",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — null",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — NaN",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — Infinity",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task amount — scientific notation",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — empty customer name",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — whitespace-only customer name",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — single character customer name",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — very long customer name (10k)",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — missing customer name",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — customer name as a number",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — customer name as an object",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — unicode and emoji customer name",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — HTML in the customer name",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — missing payout type",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — payout type with no identifier",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — unknown payout type",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — malformed UPI id",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "task field — UPI id with a leading dot",
+      "passed": true,
+      "detail": "HTTP 201"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: {\"$ne\":null}",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: $where",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: '; drop database;",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: ../../etc/passwd",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: %00",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "search survives hostile input: xxxxxxxxxxxxxxxxxxxx",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=0&limit=10",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=-1&limit=10",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=1&limit=0",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=1&limit=100000",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=abc&limit=xyz",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "pagination — page=1e10&limit=10",
+      "passed": true,
+      "detail": "HTTP 200"
+    },
+    {
+      "area": "Boundaries",
+      "name": "malformed task id — not-an-id",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "malformed task id — 000000000000000000000000",
+      "passed": true,
+      "detail": "HTTP 404"
+    },
+    {
+      "area": "Boundaries",
+      "name": "malformed task id — ../admin",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "malformed task id — %2e%2e",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "malformed task id — 1",
+      "passed": true,
+      "detail": "HTTP 400"
+    },
+    {
+      "area": "Boundaries",
+      "name": "double-submitting the same task does not create two of them",
+      "passed": true,
+      "detail": "1 accepted, 1 tasks written, debited 102.5"
+    },
+    {
+      "area": "Boundaries",
+      "name": "approving an already-completed task is refused",
+      "passed": true,
+      "detail": "HTTP 409"
+    },
+    {
+      "area": "Boundaries",
+      "name": "rejecting a task that is not awaiting audit is refused",
+      "passed": true,
+      "detail": "HTTP 409"
+    },
+    {
+      "area": "Boundaries",
+      "name": "a 2MB request body is rejected cleanly",
+      "passed": true,
+      "detail": "HTTP 413"
+    },
+    {
+      "area": "Concurrency",
+      "name": "2 captains claiming one task — exactly one wins",
+      "passed": true,
+      "detail": "1 succeeded, status ASSIGNED"
+    },
+    {
+      "area": "Concurrency",
+      "name": "losing claimants hold nothing (2-way)",
+      "passed": true,
+      "detail": "0 losers still attached"
+    },
+    {
+      "area": "Concurrency",
+      "name": "5 captains claiming one task — exactly one wins",
+      "passed": true,
+      "detail": "1 succeeded, status ASSIGNED"
+    },
+    {
+      "area": "Concurrency",
+      "name": "losing claimants hold nothing (5-way)",
+      "passed": true,
+      "detail": "0 losers still attached"
+    },
+    {
+      "area": "Concurrency",
+      "name": "10 captains claiming one task — exactly one wins",
+      "passed": true,
+      "detail": "1 succeeded, status ASSIGNED"
+    },
+    {
+      "area": "Concurrency",
+      "name": "losing claimants hold nothing (10-way)",
+      "passed": true,
+      "detail": "0 losers still attached"
+    },
+    {
+      "area": "Concurrency",
+      "name": "simultaneous proof submissions leave exactly one live proof",
+      "passed": true,
+      "detail": "1 succeeded, 1 live proofs"
+    },
+    {
+      "area": "Concurrency",
+      "name": "four simultaneous approvals credit the captain exactly once",
+      "passed": true,
+      "detail": "1 approvals, 1 commissions, credited 502.5 vs expected 502.5"
+    },
+    {
+      "area": "Concurrency",
+      "name": "simultaneous cancellations refund at most once",
+      "passed": true,
+      "detail": "1 succeeded, refunded 768.75, expected 768.75"
+    },
+    {
+      "area": "Concurrency",
+      "name": "confirm vs dispute moves money only when it settles (5 portions raced)",
+      "passed": true
+    },
+    {
+      "area": "Concurrency",
+      "name": "a top-up approved and rejected at once credits at most once",
+      "passed": true,
+      "detail": "1 succeeded, credited 0 of 35609, final REJECTED"
+    },
+    {
+      "area": "Concurrency",
+      "name": "a claim on a just-lapsed offer is refused or fully applied, never half",
+      "passed": true,
+      "detail": "claimed=false, status=CREATED, captain=null"
+    },
+    {
+      "area": "Concurrency",
+      "name": "creating a task credits the platform nothing",
+      "passed": true,
+      "detail": "wallet moved by 0 DMC"
+    },
+    {
+      "area": "Concurrency",
+      "name": "admin cannot cash out commission for a task that is then cancelled",
+      "passed": true,
+      "detail": "settled=false wallet 18928.44->18928.44 party drift 0 DMC"
+    },
+    {
+      "area": "Accounting",
+      "name": "every party balance reconstructs from its own history",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no party holds a negative balance",
+      "passed": true,
+      "detail": "0 parties negative"
+    },
+    {
+      "area": "Accounting",
+      "name": "no captain holds a negative balance or lock",
+      "passed": true,
+      "detail": "0 captains negative"
+    },
+    {
+      "area": "Accounting",
+      "name": "locked collateral equals the value of tasks in hand",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "commission is credited exactly once per completed task",
+      "passed": true,
+      "detail": "0 duplicated, 0 missing"
+    },
+    {
+      "area": "Accounting",
+      "name": "no commission exists for a task that is not complete",
+      "passed": true,
+      "detail": "0 orphaned"
+    },
+    {
+      "area": "Accounting",
+      "name": "captain balance equals reimbursements plus commission minus settled withdrawals",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "withdrawal portions sum to the parent request",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no allocation is consumed beyond what it holds",
+      "passed": true,
+      "detail": "0 over-consumed"
+    },
+    {
+      "area": "Accounting",
+      "name": "no payment reference is claimed on two different tasks",
+      "passed": true,
+      "detail": "0 reused"
+    },
+    {
+      "area": "Accounting",
+      "name": "platform commission equals what completed tasks earned minus settled withdrawals",
+      "passed": true,
+      "detail": "expected 18,928.44 DMC, actual 18,928.44 DMC"
+    },
+    {
+      "area": "Accounting",
+      "name": "platform wallet is never negative",
+      "passed": true,
+      "detail": "18,928.44 DMC"
+    },
+    {
+      "area": "Accounting",
+      "name": "no admin allocation exists for a task that is not complete",
+      "passed": true,
+      "detail": "0 such allocations"
+    },
+    {
+      "area": "Accounting",
+      "name": "5 cancelled tasks exist to check refunds against",
+      "passed": true
+    },
+    {
+      "area": "Accounting",
+      "name": "no fractional paise anywhere in task amounts",
+      "passed": true,
+      "detail": "0 fractional"
+    }
+  ],
+  "seconds": 16
+}

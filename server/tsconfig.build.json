@@ -1,0 +1,24 @@
+{
+  // The production build.
+  //
+  // Two things are overridden, and both exist because a Render build is not the
+  // same environment as a developer's machine.
+  //
+  // `types` is narrowed to node alone. The base config lists jest as well, which
+  // is right for editing and for `npm test`, but this build excludes every test
+  // file, so jest's types are not needed to compile it. The types a build asks
+  // for should follow from the files it actually compiles.
+  //
+  // The version pinned here tolerates a missing entry in `types`; a newer
+  // compiler reports it as "Cannot find type definition file for 'jest'". Not
+  // naming a package this build does not need removes the question entirely.
+  //
+  // `sourceMap` is off because nothing in production reads one, and a map beside
+  // every emitted file makes the deployed image larger for no benefit.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "sourceMap": false
+  },
+  "exclude": ["node_modules", "dist", "src/tests/**/*"]
+}

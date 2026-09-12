@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light palette (default). Same blue-graphite undertone as dark, inverted
+     in lightness so every `ink-*` utility keeps its semantic role — 950 is
+     always "page background", 50 is always "max-emphasis text" — across
+     both themes. Toggled via .dark on <html>; see stores/theme.store.ts. */
+  :root {
+    color-scheme: light;
+    --ink-950: 247 248 250;
+    --ink-900: 255 255 255;
+    --ink-850: 243 245 248;
+    --ink-800: 234 237 242;
+    --ink-700: 223 227 234;
+    --ink-600: 203 209 220;
+    --ink-500: 169 177 194;
+    --ink-400: 107 118 144;
+    --ink-300: 75 85 104;
+    --ink-200: 46 53 71;
+    --ink-100: 27 33 48;
+    --ink-50: 11 15 23;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --ink-950: 11 15 23;
+    --ink-900: 16 21 31;
+    --ink-850: 21 27 39;
+    --ink-800: 26 33 48;
+    --ink-700: 35 44 62;
+    --ink-600: 44 53 71;
+    --ink-500: 58 69 92;
+    --ink-400: 90 103 128;
+    --ink-300: 133 146 168;
+    --ink-200: 180 190 205;
+    --ink-100: 220 226 234;
+    --ink-50: 242 244 248;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink-950 text-ink-100 font-sans antialiased transition-colors duration-150;
+    font-feature-settings: 'cv05' 1, 'ss01' 1;
+  }
+
+  /* Money, references, and codes must align in columns and expose
+     digit-count differences, so figures are always tabular. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-ink-950 rounded-sm;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-ink-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-600 rounded-full border-2 border-solid border-ink-900;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-500;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-ink-900 border border-ink-700 rounded-panel;
+  }
+
+  /* Section eyebrow. Used only where it names a real grouping. */
+  .eyebrow {
+    @apply text-2xs font-mono uppercase tracking-[0.12em] text-ink-400;
+  }
+
+  .field-label {
+    @apply block text-xs font-medium text-ink-300 mb-1.5;
+  }
+
+  .field-input {
+    @apply w-full bg-ink-850 border border-ink-600 rounded-md px-3 py-2 text-sm text-ink-50
+           placeholder:text-ink-400 transition-colors
+           focus:border-brand-500 focus:bg-ink-800
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .field-error {
+    @apply text-xs text-signal-red mt-1.5 flex items-center gap-1;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium
+           transition-colors disabled:opacity-45 disabled:cursor-not-allowed whitespace-nowrap;
+  }
+  /* Brand blue, not a `signal` colour: primary actions are never a state marker. */
+  .btn-primary {
+    @apply btn bg-brand-500 text-white hover:bg-brand-600 font-semibold;
+  }
+  .btn-secondary {
+    @apply btn bg-ink-700 text-ink-100 hover:bg-ink-600 border border-ink-600;
+  }
+  .btn-danger {
+    @apply btn bg-signal-red text-white hover:bg-[#D4664E];
+  }
+  .btn-ghost {
+    @apply btn text-ink-300 hover:text-ink-50 hover:bg-ink-800;
+  }
+}
