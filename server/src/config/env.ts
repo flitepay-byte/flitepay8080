@@ -49,10 +49,16 @@ const envSchema = z
     // so the app remains usable without credentials.
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().positive().default(587),
+    /**
+     * Read leniently. This used to be `v === 'true'`, so `TRUE`, `True`, ` true`
+     * and `1` all quietly meant false — and on port 465 a false here does not
+     * fail cleanly: the connection sits open for many seconds and then closes
+     * with no error code at all. mailer.ts also reconciles this against the port.
+     */
     SMTP_SECURE: z
       .string()
       .default('false')
-      .transform((v) => v === 'true'),
+      .transform((v) => ['true', '1', 'yes', 'on'].includes(v.trim().toLowerCase())),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_FROM: z.string().default('OTDMS <no-reply@otdms.local>'),
